@@ -12,7 +12,7 @@ interface AdminDashboardProps {
 type MenuItem = Required<MenuProps>["items"][number];
 
 const Header = ({sidebarCollapsed,headerText}: AdminDashboardProps) => {
-    const [user, setUser] = useState<SignInResType>(null);
+    const [user, setUser] = useState<any>(null);
     const navigate = useNavigate();
 
     useEffect(() => {

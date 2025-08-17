@@ -9,31 +9,17 @@ interface UserListProps {
   onDelete?: (user: UserResType) => void;
   isLoading:boolean;
 }
-const UserList: React.FC<UserListProps> = ({
+const CustomerList: React.FC<UserListProps> = ({
                                              users = [],
                                              onEdit = () => {},
                                              onDelete = () => {},
                                                isLoading
                                            }) => {
   const columns = [
-    { title: "First Name", dataIndex: "firstName", key: "firstName" },
-    { title: "Last Name", dataIndex: "lastName", key: "lastName" },
+    { title: "Customer ID", dataIndex: "customerId", key: "customerId" },
+    { title: "Name", dataIndex: "name", key: "name" },
     { title: "Email", dataIndex: "email", key: "email" },
-    { title: "Role", dataIndex: "role", key: "role" },
-      {
-          title: "Status",
-          dataIndex: "status",
-          key: "status",
-          render: (status: boolean) => (
-              <span
-                  className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      status ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-                  }`}
-              >
-          {status ? "Active" : "Inactive"}
-        </span>
-          )
-      },
+    { title: "Phone", dataIndex: "phone", key: "phone" },
     {
       title: "Actions",
       key: "actions",
@@ -51,7 +37,7 @@ const UserList: React.FC<UserListProps> = ({
         <Table
             dataSource={users}
             columns={columns}
-            rowKey="_id"
+            rowKey="customerId"
             pagination={false}
             loading={isLoading}
         />
@@ -59,4 +45,4 @@ const UserList: React.FC<UserListProps> = ({
   );
 };
 
-export default UserList;
+export default CustomerList;

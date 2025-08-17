@@ -1,12 +1,12 @@
 import React from 'react';
-import TaskManagementRoutes from "./routes/TaskManagementRoutes";
+import PahanManagementRoutes from "./routes/PahanManagementRoutes";
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 
 function App() {
   return (
     <div>
-        <TaskManagementRoutes/>
+        <PahanManagementRoutes/>
         <ToastContainer
             progressStyle={{
                 transformOrigin: 'right',

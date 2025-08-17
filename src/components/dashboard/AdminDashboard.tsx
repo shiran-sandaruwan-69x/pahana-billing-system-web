@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import UserManagement from "../users/UserManagement";
-import TaskManagement from "../tasks/TaskManagement";
+import CustomerManagement from "../users/CustomerManagement";
+import ItemManagement from "../tasks/ItemManagement";
 import {CheckSquare, Users} from "lucide-react";
 import {navItemsTypes} from "../common-types/CommonTypes";
 import Sidebar from "../../layout/Sidebar";
@@ -18,17 +18,17 @@ const AdminDashboard = () => {
         {
             title: "Customer Management",
             icon: <Users size={24}/>,
-            path: "/admin/users",
+            path: "/admin/customers",
         },
         {
             title: "Item Management",
             icon: <CheckSquare size={24}/>,
-            path: "/admin/tasks",
+            path: "/admin/items",
         },
         {
             title: "Order Management",
             icon: <CheckSquare size={24}/>,
-            path: "/admin/order",
+            path: "/admin/orders",
         },
     ];
 
@@ -44,10 +44,11 @@ const AdminDashboard = () => {
         {/* Main content */}
         <main className="flex-1 overflow-y-auto p-6 bg-gray-50">
           <Routes>
-            <Route path="/users" element={<UserManagement />} />
-            <Route path="/tasks" element={<TaskManagement />} />
-            <Route path="/" element={<Navigate to="/admin/users" replace />} />
-            <Route path="*" element={<Navigate to="/admin/users" replace />} />
+            <Route path="/customers" element={<CustomerManagement />} />
+            <Route path="/items" element={<ItemManagement />} />
+            <Route path="/orders" element={<ItemManagement />} />
+            <Route path="/" element={<Navigate to="/admin/customers" replace />} />
+            <Route path="*" element={<Navigate to="/admin/customers" replace />} />
           </Routes>
         </main>
       </div>

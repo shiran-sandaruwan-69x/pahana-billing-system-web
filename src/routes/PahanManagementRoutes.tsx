@@ -3,12 +3,11 @@ import { Routes, Route, Navigate } from "react-router-dom";
 
 import { lazy } from "react";
 import AuthLayout from "../auth/AuthLayout";
-import ProtectedRoute from "./ProtectedRoute";
 
 const LoginForm = lazy(() => import("../auth/LoginForm"));
 const AdminDashboard = lazy(() => import("../components/dashboard/AdminDashboard"));
 
-function TaskManagementRoutes() {
+function PahanManagementRoutes() {
     return (
 
         <Routes>
@@ -30,4 +29,4 @@ function TaskManagementRoutes() {
     );
 }
 
-export default TaskManagementRoutes;
+export default PahanManagementRoutes;
