@@ -1,33 +1,30 @@
 import React from "react";
-import {Edit, Trash} from "lucide-react";
+import {Receipt} from "lucide-react";
 import { Table, Button} from "antd";
 
 interface TaskListProps {
   tasks?: any;
-  onEdit: (record?: any) => void;
-  onDelete: (record?: any) => void;
+  viewBill: (orderId?: string) => void;
   isLoading:boolean;
 }
 
 const OrderList = ({
                     tasks,
-  onEdit,
-  onDelete,
+                       viewBill,
                     isLoading
 }: TaskListProps) => {
 
   const columns = [
-    { title: "Item Code", dataIndex: "itemCode", key: "itemCode" },
-    { title: "Item Name & Description", dataIndex: "description", key: "description" },
-    { title: "Unit Price", dataIndex: "unitPrice", key: "unitPrice"},
-    { title: "QTY On Hand", dataIndex: "qtyOnHand", key: "qtyOnHand"},
+    { title: "Customer ID", dataIndex: "customerId", key: "customerId" },
+    { title: "Customer Name & Description", dataIndex: "customerName", key: "customerName" },
+    { title: "Order ID", dataIndex: "orderId", key: "orderId"},
+    { title: "Order Date", dataIndex: "date", key: "date"},
     {
       title: "Actions",
       key: "actions",
       render: (record: any) => (
           <div className="flex gap-2">
-            <Button type="link"  size="small" icon={<Edit size={20} />} onClick={() => onEdit(record)} />
-            <Button type="link" size="small" icon={<Trash size={20} />} danger onClick={() => onDelete(record)} />
+            <Button type="link"  size="small" icon={<Receipt size={20} />} onClick={() => viewBill(record?.orderId)} />
           </div>
       ),
     },
@@ -38,7 +35,7 @@ const OrderList = ({
       <Table
           dataSource={tasks}
           columns={columns}
-          rowKey="itemCode"
+          rowKey="orderId"
           pagination={false}
           loading={isLoading}
       />

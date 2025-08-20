@@ -1,17 +1,16 @@
 import React, {useEffect, useState} from "react";
-import {Form, Input, Button, Row, Col, Modal, Select} from "antd";
+import {Form, Input, Button, Row, Col, Modal, Select, Typography} from "antd";
 import {toast} from "react-toastify";
-import {editItem, getAllItems, saveItem} from "../../services/item-services/ItemServices";
+import {getAllItems} from "../../services/item-services/ItemServices";
 import {getAllCustomers} from "../../services/customer-services/CustomerServices";
 import {saveOrder} from "../../services/order-services/OrderServices";
-const { TextArea } = Input;
 
 interface OderFormProps {
     isFormOpen:boolean;
     toggleModal:()=>void;
     isEditing?: boolean;
     task:any;
-    getItems:()=>void;
+    getPlaceOrders:()=>void;
 }
 const { Option } = Select;
 const OrderForm: React.FC<OderFormProps> = ({
@@ -19,7 +18,7 @@ const OrderForm: React.FC<OderFormProps> = ({
                                                toggleModal,
                                                isEditing,
                                                task,
-                                               getItems
+                                                getPlaceOrders
                                            }) => {
     const [form] = Form.useForm();
     const [isLoading, setIsLoading] = useState(false);
@@ -88,7 +87,7 @@ const OrderForm: React.FC<OderFormProps> = ({
         try {
             setIsLoading(true);
             await saveOrder(formattedValues);
-            getItems();
+            getPlaceOrders();
             toast.success('Order place successfully!');
             form.resetFields();
             toggleModal();
@@ -181,7 +180,7 @@ const OrderForm: React.FC<OderFormProps> = ({
                     </Col>
                 </Row>
 
-                <Row className="flex justify-end items-center">
+                <Row className="flex justify-end items-center mt-10">
                     <Col xs={24} sm={12} className="sm:mt-10">
                         <Form.Item className="flex justify-end">
                         <Button loading={isLoading} color="default" variant="solid" htmlType="submit">

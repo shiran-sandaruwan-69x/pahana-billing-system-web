@@ -6,28 +6,26 @@ import OrderForm from "./orderForm";
 import {toast} from "react-toastify";
 import DeleteAlertModal from "../common-comp/DeleteAlertModal";
 import {deleteItem, getAllItems} from "../../services/item-services/ItemServices";
-import {printBill} from "../../services/order-services/OrderServices";
+import {getAllOrders, printBill} from "../../services/order-services/OrderServices";
+import jsPDF from "jspdf";
+import autoTable from "jspdf-autotable";
 
 
 const OrderManagement: React.FC  = () => {
   const [isTableLoading, setTableLoading] = useState<boolean>(false);
   const [isFormOpen, setIsFormOpen] = useState<boolean>(false);
-  const [isEditFormOpen, setIsEditFormOpen] = useState<boolean>(false);
-  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState<boolean>(false);
   const [editingTask, setEditingTask] = useState<any>(null);
-  const [deleteTask, setDeleteTask] = useState<any>(null);
   const [allTasks, setAllTasks] = useState( []);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [billData, setBillData] = useState<any>(null);
 
   const toggleModal = () => setIsFormOpen(!isFormOpen);
-  const toggleEditModal = () => setIsEditFormOpen(!isEditFormOpen);
-  const toggleDeleteModal = () => setIsDeleteDialogOpen(!isDeleteDialogOpen);
 
   useEffect(() => {
-    getItems();
+    getPlaceOrders();
   }, []);
 
   const handleCreateTask = () => {
@@ -35,57 +33,71 @@ const OrderManagement: React.FC  = () => {
     toggleModal();
   };
 
-  const handleEditTask = (record: any) => {
-    setEditingTask(record);
-    toggleEditModal();
-  };
-
-  const handleDeleteTask = (record: any) => {
-    setDeleteTask(record);
-    toggleDeleteModal();
-  };
-
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
   };
 
-  const confirmDelete = async () => {
-    toggleDeleteModal();
+  const getPlaceOrders = async ()=>{
     try {
-      const id:string = deleteTask?.itemCode ?? null;
-      await deleteItem(id);
-      getItems();
-    }catch (error){
-      toast.error('Internal server error');
-    }
-  };
-
-  const getItems = async ()=>{
-    try {
-      const response:any = await getAllItems();
-      setAllTasks(response?.items);
+      const response:any = await getAllOrders();
+      console.log('response',response)
+      setAllTasks(response?.orders);
     }catch (error){
       toast.error('Internal server error');
     }
   }
 
-  const viewBill = async (orderId: string) => {
+  const generatePDF = (bill: any, orderId?: string) => {
+    const doc = new jsPDF();
+
+    doc.setFontSize(18);
+    doc.text(`Bill for Order ${orderId}`, 14, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Customer: ${bill.customerName}`, 14, 30);
+    doc.text(`Total: Rs ${bill.fullTotal?.toFixed(2)}`, 14, 38);
+
+    const tableData = bill.orderDetails?.map((item: any) => [
+      item.itemNo,
+      item.qty,
+      item.itemPrice,
+      item.price,
+    ]) || [];
+
+    autoTable(doc, {
+      startY: 50,
+      head: [["Item No", "Qty", "Unit Price", "Total"]],
+      body: tableData,
+    });
+
+    doc.save(`Bill-${orderId}.pdf`);
+  };
+
+  const viewBill = async (orderId?: string) => {
     try {
-      const response:any = await printBill(orderId);
-      const bill = response.data;
+      const response: any = await printBill(orderId);
+      console.log("response", response);
+
+      const bill = response ?? {};
+      setBillData(bill);
+
       Modal.info({
         title: `Bill for Order ${orderId}`,
         content: (
             <div>
-              <p><strong>Customer:</strong> {bill.customerName}</p>
-              <p><strong>Total:</strong> ${bill.fullTotal.toFixed(2)}</p>
+              <p>
+                <strong>Customer:</strong> {bill.customerName}
+              </p>
+              <p>
+                <strong>Total:</strong> Rs : {bill.fullTotal?.toFixed(2)}
+              </p>
               <Table
                   dataSource={bill.orderDetails}
                   columns={[
-                    { title: 'Item No', dataIndex: 'itemNo', key: 'itemNo' },
-                    { title: 'Qty', dataIndex: 'qty', key: 'qty' },
-                    { title: 'Unit Price', dataIndex: 'itemPrice', key: 'itemPrice' },
-                    { title: 'Total', dataIndex: 'price', key: 'price' },
+                    { title: "Item No", dataIndex: "itemNo", key: "itemNo" },
+                    { title: "Qty", dataIndex: "qty", key: "qty" },
+                    { title: "Unit Price", dataIndex: "itemPrice", key: "itemPrice" },
+                    { title: "Total", dataIndex: "price", key: "price" },
                   ]}
                   pagination={false}
                   rowKey="itemNo"
@@ -93,9 +105,23 @@ const OrderManagement: React.FC  = () => {
             </div>
         ),
         width: 600,
+        footer: [
+          <div className="flex justify-end items-center mt-10">
+            <Button
+                key="download"
+                color="default" variant="solid"
+                onClick={() => generatePDF(bill, orderId)}
+            >
+              Print Bill
+            </Button>,
+            <Button className="ml-2" key="close" onClick={() => Modal.destroyAll()}>
+              Close
+            </Button>,
+          </div>
+        ],
       });
     } catch (error) {
-      toast.error('Internal server error');
+      toast.error("Internal server error");
     }
   };
 
@@ -115,8 +141,7 @@ const OrderManagement: React.FC  = () => {
 
         <OrderList
             tasks={allTasks}
-            onEdit={handleEditTask}
-            onDelete={handleDeleteTask}
+            viewBill={viewBill}
             isLoading={isTableLoading}
         />
 
@@ -136,26 +161,7 @@ const OrderManagement: React.FC  = () => {
                 toggleModal={toggleModal}
                 isEditing={false}
                 task={editingTask}
-                getItems={getItems}
-            />
-        )}
-
-        {isEditFormOpen && (
-            <OrderForm
-                isFormOpen={isEditFormOpen}
-                toggleModal={toggleEditModal}
-                isEditing
-                task={editingTask}
-                getItems={getItems}
-            />
-        )}
-
-        {isDeleteDialogOpen && (
-            <DeleteAlertModal
-                isFormOpen={isDeleteDialogOpen}
-                toggleModal={toggleDeleteModal}
-                confirmDelete={confirmDelete}
-                message="Are you sure you want to delete this Item?"
+                getPlaceOrders={getPlaceOrders}
             />
         )}
 
