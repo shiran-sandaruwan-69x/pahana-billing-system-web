@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import CustomerManagement from "../users/CustomerManagement";
-import ItemManagement from "../tasks/ItemManagement";
+import ItemManagement from "../items/ItemManagement";
 import {CheckSquare, Users} from "lucide-react";
 import {navItemsTypes} from "../common-types/CommonTypes";
 import Sidebar from "../../layout/Sidebar";
 import Header from "../../layout/Header";
+import OrderManagement from "../orders/orderManagement";
 
 const AdminDashboard = () => {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
@@ -46,7 +47,7 @@ const AdminDashboard = () => {
           <Routes>
             <Route path="/customers" element={<CustomerManagement />} />
             <Route path="/items" element={<ItemManagement />} />
-            <Route path="/orders" element={<ItemManagement />} />
+            <Route path="/orders" element={<OrderManagement />} />
             <Route path="/" element={<Navigate to="/admin/customers" replace />} />
             <Route path="*" element={<Navigate to="/admin/customers" replace />} />
           </Routes>

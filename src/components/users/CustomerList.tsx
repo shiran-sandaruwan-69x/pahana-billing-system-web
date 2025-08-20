@@ -1,12 +1,11 @@
 import React from "react";
 import { Table, Button} from "antd";
 import { Edit, Trash } from "lucide-react";
-import {UserResType} from "./user-types/UserTypes";
 
 interface UserListProps {
-  users?: UserResType[];
-  onEdit?: (user: UserResType) => void;
-  onDelete?: (user: UserResType) => void;
+  users?: any[];
+  onEdit?: (user: any) => void;
+  onDelete?: (user: any) => void;
   isLoading:boolean;
 }
 const CustomerList: React.FC<UserListProps> = ({
@@ -23,7 +22,7 @@ const CustomerList: React.FC<UserListProps> = ({
     {
       title: "Actions",
       key: "actions",
-      render: (record: UserResType) => (
+      render: (record: any) => (
           <div className="flex gap-2">
               <Button type="link"  size="small" icon={<Edit size={20} />} onClick={() => onEdit(record)} />
               <Button type="link" size="small" icon={<Trash size={20} />} danger onClick={() => onDelete(record)} />
